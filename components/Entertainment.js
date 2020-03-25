@@ -1,0 +1,100 @@
+import React, { Component } from 'react';
+import { Text, Image, Modal, Dimensions } from 'react-native';
+import { WebView } from 'react-native-webview';
+import Share from 'react-native-share';
+import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title, Icon, View } from 'native-base';
+
+let ScreenHeight = Dimensions.get("window").height;
+
+export default class Entertainment extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [],
+            modalVisible: false,
+            modalDataIndex: 0
+        };
+    }
+
+    async UNSAFE_componentWillMount() {
+        try {
+            let response = await fetch('http://newsapi.org/v2/top-headlines?country=in&category=entertainment&apiKey=c6ef3c067708492e8223b8ae32ba7efa');
+            let responseJson = await response.json();
+            this.setState({ data: responseJson.articles });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    onShare() {
+        Share.open({url: 'https://google.com'})
+            .then((res) => { console.log(res) })
+            .catch((err) => { console.log(err) });
+    }
+
+    render() {
+        if(this.state.data.length > 0){
+        return (
+            <Container>
+                <Content>
+                    <Modal
+                        animationType="slide"
+                        visible={this.state.modalVisible}
+                        transparent
+                    >
+                        <Container style={{margin:10, marginBottom:0, backgroundColor:'#fff'}}>
+                            <Header>
+                                <Left>
+                                    <Button transparent onPress={() => this.setState({ modalVisible: false })}>
+                                        <Icon name="close" />
+                                    </Button>
+                                </Left>
+                                <Body>
+                                    <Title children={this.state.data[this.state.modalDataIndex].title} style={{color: 'white'}}/>
+                                </Body>
+                                <Right>
+                                    <Button transparent onPress={this.onShare}>
+                                        <Icon name="share" />
+                                    </Button>
+                                </Right>
+                            </Header>
+                            <Content>
+                                <WebView
+                                    source={{uri: this.state.data[this.state.modalDataIndex].url}}
+                                    style={{width: '100%', height: ScreenHeight - 95}}
+                                />
+                            </Content>
+                        </Container>
+                    </Modal>
+                    
+                    {this.state.data.map((news, index) => {
+                        return (
+                            <Card key={index}>
+                                <CardItem style={{flexDirection: 'column'}}>                       
+                                    <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 5}}>{news.title.split('-')[0]}</Text>
+                                </CardItem>
+
+                                <CardItem cardBody style={{flexDirection: 'column'}}> 
+                                    <Image style={{width: '90%', height: 200}} source={{uri: news.urlToImage}} /> 
+                                    <Text style={{width: '90%', marginVertical: 15}}>{news.description}</Text>
+                                    <Button style={{width: '35%', flexDirection: 'column', marginBottom: 15}}>
+                                        <Text style={{color: 'white', textAlign: 'center', alignSelf: 'stretch', paddingTop: 7}} 
+                                            onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More!</Text>
+                                    </Button>
+                                </CardItem>
+                            </Card>
+                        );
+                    })}
+                </Content>
+            </Container>
+        );
+        } else {
+            return (
+                <View>
+                    <Text>Loading!</Text>
+                </View>  
+            );
+        }
+    }
+
+}
