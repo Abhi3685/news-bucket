@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Text, View, Image } from 'react-native';
-import { Container, Header, Tab, Tabs, Body, Title, Right, Icon, Button, Card, CardItem, Content, ScrollableTab } from 'native-base';
+import { Text, View } from 'react-native';
+import { Container, Header, Tab, Tabs, Body, Title, Right, Icon, Button, ScrollableTab, Spinner } from 'native-base';
 
 import Entertainment from './components/Entertainment';
 import Business from './components/Business';
@@ -14,6 +14,8 @@ export default class App extends Component {
     this.state = { 
       loading: true
     };
+
+    this.reload = this.reload.bind(this);
   }
 
   async UNSAFE_componentWillMount() {
@@ -25,20 +27,30 @@ export default class App extends Component {
     this.setState({ loading: false });
   }
 
+  reload() {
+    this.setState({ loading: true });
+    let that = this;
+    setTimeout(function(){
+      that.setState({ loading: false });
+    }, 500);
+  }
+
   render() {
     if (!this.state.loading) {
       return (
         <Container>
+          
           <Header noLeft style={{height: 80, paddingTop: 20, marginBottom: -10}}>
             <Body>
               <Title>NewsBucket</Title>
             </Body>
             <Right>
-              <Button transparent>
-                <Icon name='search'></Icon>
+              <Button transparent onPress={this.reload}>
+                <Icon name='refresh'></Icon>
               </Button>
             </Right>
           </Header>
+
           <Tabs renderTabBar={()=> <ScrollableTab />}>
             <Tab heading="Entertainment">
               <Entertainment />
@@ -60,8 +72,8 @@ export default class App extends Component {
       );
     } else {
       return(
-        <View style={{padding: 50}}>
-          <Text>Loading!</Text>
+        <View style={{ paddingTop: '85%' }}>
+          <Spinner color='blue' />
         </View>
       );
     }

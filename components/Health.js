@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, Image, Modal, Dimensions, Share } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title, Icon, View } from 'native-base';
+import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title, Icon, View, Spinner } from 'native-base';
 
 let ScreenHeight = Dimensions.get("window").height;
 
@@ -29,7 +29,7 @@ export default class Health extends Component {
 
     async onShare() {
         await Share.share({
-            message: `${this.state.data[this.state.modalDataIndex].title}\n\nRead More: ${this.state.data[this.state.modalDataIndex].url}\n\n-- Shared using News Bucket`
+            message: `${this.state.data[this.state.modalDataIndex].title}\n\nRead More: ${this.state.data[this.state.modalDataIndex].url}\n\n-- Shared using NewsBucket`
         });
     }
 
@@ -91,9 +91,9 @@ export default class Health extends Component {
         );
         } else {
             return (
-                <View>
-                    <Text>Loading!</Text>
-                </View>  
+                <View style={{ paddingTop: '70%' }}>
+                    <Spinner color='blue' />
+                </View>
             );
         }
     }
