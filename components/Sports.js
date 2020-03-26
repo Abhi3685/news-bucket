@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
-import { Text, Image } from 'react-native';
-import { Container, Button, Card, CardItem, Content } from 'native-base';
+import { Text, Image, Modal, Dimensions, Share } from 'react-native';
+import { WebView } from 'react-native-webview';
+import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title, Icon, View } from 'native-base';
+
+let ScreenHeight = Dimensions.get("window").height;
 
 export default class Sports extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: []
+            data: [],
+            modalVisible: false,
+            modalDataIndex: 0
         };
+
+        this.onShare = this.onShare.bind(this);
     }
 
     async UNSAFE_componentWillMount() {
@@ -20,11 +27,48 @@ export default class Sports extends Component {
         }
     }
 
+    async onShare() {
+        await Share.share({
+            message: `${this.state.data[this.state.modalDataIndex].title}\n\nRead More: ${this.state.data[this.state.modalDataIndex].url}\n\n-- Shared using News Bucket`
+        });
+    }
+
     render() {
+        if(this.state.data.length > 0){
         return (
             <Container>
                 <Content>
-                    {this.state.data.map((news, index) => {
+                    <Modal
+                        animationType="slide"
+                        visible={this.state.modalVisible}
+                        transparent
+                    >
+                        <Container style={{margin:10, marginBottom:0, backgroundColor:'#fff'}}>
+                            <Header>
+                                <Left>
+                                    <Button transparent onPress={() => this.setState({ modalVisible: false })}>
+                                        <Icon name="close" />
+                                    </Button>
+                                </Left>
+                                <Body>
+                                    <Title children={this.state.data[this.state.modalDataIndex].title} style={{color: 'white'}}/>
+                                </Body>
+                                <Right>
+                                    <Button transparent onPress={this.onShare}>
+                                        <Icon name="share" />
+                                    </Button>
+                                </Right>
+                            </Header>
+                            <Content>
+                                <WebView
+                                    source={{uri: this.state.data[this.state.modalDataIndex].url}}
+                                    style={{width: '100%', height: ScreenHeight - 95}}
+                                />
+                            </Content>
+                        </Container>
+                    </Modal>
+                    
+                    {this.state.data.filter(news => news.urlToImage !== null).map((news, index) => {
                         return (
                             <Card key={index}>
                                 <CardItem style={{flexDirection: 'column'}}>                       
@@ -34,7 +78,10 @@ export default class Sports extends Component {
                                 <CardItem cardBody style={{flexDirection: 'column'}}> 
                                     <Image style={{width: '90%', height: 200}} source={{uri: news.urlToImage}} /> 
                                     <Text style={{width: '90%', marginVertical: 15}}>{news.description}</Text>
-                                    <Button style={{width: '35%', flexDirection: 'column', marginBottom: 15}}><Text style={{color: 'white', textAlign: 'center', alignSelf: 'stretch', paddingTop: 7}}>Read More!</Text></Button>
+                                    <Button style={{width: '35%', flexDirection: 'column', marginBottom: 15}}>
+                                        <Text style={{color: 'white', textAlign: 'center', alignSelf: 'stretch', paddingTop: 7}} 
+                                            onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More!</Text>
+                                    </Button>
                                 </CardItem>
                             </Card>
                         );
@@ -42,6 +89,13 @@ export default class Sports extends Component {
                 </Content>
             </Container>
         );
+        } else {
+            return (
+                <View>
+                    <Text>Loading!</Text>
+                </View>  
+            );
+        }
     }
 
 }

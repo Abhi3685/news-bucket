@@ -24,7 +24,7 @@ export default class Science extends Component {
         return (
             <Container>
                 <Content>
-                    {this.state.data.map((news, index) => {
+                    {this.state.data.filter(news => news.urlToImage !== null).map((news, index) => {
                         return (
                             <Card key={index}>
                                 <CardItem style={{flexDirection: 'column'}}>                       

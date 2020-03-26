@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Text, Image, Modal, Dimensions } from 'react-native';
+import { Text, Image, Modal, Dimensions, Share } from 'react-native';
 import { WebView } from 'react-native-webview';
-import Share from 'react-native-share';
 import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title, Icon, View } from 'native-base';
 
 let ScreenHeight = Dimensions.get("window").height;
@@ -14,6 +13,8 @@ export default class Entertainment extends Component {
             modalVisible: false,
             modalDataIndex: 0
         };
+
+        this.onShare = this.onShare.bind(this);
     }
 
     async UNSAFE_componentWillMount() {
@@ -26,10 +27,10 @@ export default class Entertainment extends Component {
         }
     }
 
-    onShare() {
-        Share.open({url: 'https://google.com'})
-            .then((res) => { console.log(res) })
-            .catch((err) => { console.log(err) });
+    async onShare() {
+        await Share.share({
+            message: `${this.state.data[this.state.modalDataIndex].title}\n\nRead More: ${this.state.data[this.state.modalDataIndex].url}\n\n-- Shared using News Bucket`
+        });
     }
 
     render() {
@@ -67,7 +68,7 @@ export default class Entertainment extends Component {
                         </Container>
                     </Modal>
                     
-                    {this.state.data.map((news, index) => {
+                    {this.state.data.filter(news => news.urlToImage !== null).map((news, index) => {
                         return (
                             <Card key={index}>
                                 <CardItem style={{flexDirection: 'column'}}>                       
