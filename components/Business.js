@@ -42,6 +42,7 @@ export default class Business extends Component {
                         animationType="slide"
                         visible={this.state.modalVisible}
                         transparent
+                        onRequestClose={() => this.setState({ modalVisible: false })}
                     >
                         <Container style={{margin:10, marginBottom:0, backgroundColor:'#fff'}}>
                             <Header>
@@ -63,6 +64,7 @@ export default class Business extends Component {
                                 <WebView
                                     source={{uri: this.state.data[this.state.modalDataIndex].url}}
                                     style={{width: '100%', height: ScreenHeight - 95}}
+                                    startInLoadingState={true}
                                 />
                             </Content>
                         </Container>
@@ -78,9 +80,11 @@ export default class Business extends Component {
                                 <CardItem cardBody style={{flexDirection: 'column'}}> 
                                     <Image style={{width: '90%', height: 200}} source={{uri: news.urlToImage}} /> 
                                     <Text style={{width: '90%', marginVertical: 15}}>{news.description}</Text>
-                                    <Button style={{width: '35%', flexDirection: 'column', marginBottom: 15}}>
-                                        <Text style={{color: 'white', textAlign: 'center', alignSelf: 'stretch', paddingTop: 7}} 
-                                            onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More!</Text>
+                                    <Button style={{width: '35%', flexDirection: 'column', marginBottom: 15}}
+                                        onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>
+                                        <Text style={{color: 'white', textAlign: 'center', alignSelf: 'stretch', paddingTop: 7}}>
+                                            Read More!
+                                        </Text>
                                     </Button>
                                 </CardItem>
                             </Card>
