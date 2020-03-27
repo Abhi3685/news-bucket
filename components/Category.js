@@ -71,7 +71,7 @@ export default class Category extends Component {
                         </Container>
                     </Modal>
                     
-                    {this.state.data.filter(news => news.urlToImage !== null).map((news, index) => {
+                    {this.state.data.filter(news => news.urlToImage !== null && news.urlToImage !== '').map((news, index) => {
                         return (
                             <Card key={index}>
                                 <CardItem style={{flexDirection: 'column'}}>                       
