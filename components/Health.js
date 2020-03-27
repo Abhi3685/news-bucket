@@ -74,7 +74,7 @@ export default class Health extends Component {
                         return (
                             <Card key={index}>
                                 <CardItem style={{flexDirection: 'column'}}>                       
-                                    <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 5}}>{news.title.split('-')[0]}</Text>
+                                    <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 5}}>{news.title.slice(0, news.title.lastIndexOf('-'))}</Text>
                                 </CardItem>
 
                                 <CardItem cardBody style={{flexDirection: 'column'}}> 
