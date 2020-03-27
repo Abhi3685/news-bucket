@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
-import { Container, Header, Tab, Tabs, Body, Title, Right, Icon, Button, ScrollableTab, Spinner } from 'native-base';
+import { Container, Tab, Tabs, ScrollableTab } from 'native-base';
 
-import Entertainment from './components/Entertainment';
-import Business from './components/Business';
-import Science from './components/Science';
-import Health from './components/Health';
-import Sports from './components/Sports';
+import Category from './components/Category';
+import Loading from './components/Loading';
+import AppBar from './components/AppBar';
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      loading: true
+      loading: true,
+      categories: [ 'entertainment', 'business', 'science', 'health', 'sports' ]
     };
 
     this.reload = this.reload.bind(this);
@@ -39,43 +37,22 @@ export default class App extends Component {
     if (!this.state.loading) {
       return (
         <Container>
-          
-          <Header noLeft style={{height: 80, paddingTop: 20, marginBottom: -10}}>
-            <Body>
-              <Title>NewsBucket</Title>
-            </Body>
-            <Right>
-              <Button transparent onPress={this.reload}>
-                <Icon name='refresh'></Icon>
-              </Button>
-            </Right>
-          </Header>
-
+          <AppBar reload={this.reload} />
           <Tabs renderTabBar={()=> <ScrollableTab />}>
-            <Tab heading="Entertainment">
-              <Entertainment />
-            </Tab>
-            <Tab heading="Business">
-              <Business />
-            </Tab>
-            <Tab heading="Science">
-              <Science />
-            </Tab>
-            <Tab heading="Health">
-              <Health />
-            </Tab>
-            <Tab heading="Sports">
-              <Sports />
-            </Tab>
+            {
+              this.state.categories.map(category => {
+                return (
+                  <Tab key={category} heading={category.charAt(0).toUpperCase() + category.slice(1)}>
+                    <Category category={category} />
+                  </Tab>
+                );
+              })
+            }
           </Tabs>
         </Container>
       );
     } else {
-      return(
-        <View style={{ paddingTop: '85%' }}>
-          <Spinner color='blue' />
-        </View>
-      );
+      return( <Loading padding="85" /> );
     }
   }
 }

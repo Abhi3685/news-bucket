@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Text, Image, Modal, Dimensions, Share } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title, Icon, View, Spinner } from 'native-base';
+import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title, Icon } from 'native-base';
+import Loading from './Loading';
 
 let ScreenHeight = Dimensions.get("window").height;
 
-export default class Sports extends Component {
+export default class Category extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -19,7 +20,7 @@ export default class Sports extends Component {
 
     async UNSAFE_componentWillMount() {
         try {
-            let response = await fetch('http://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=c6ef3c067708492e8223b8ae32ba7efa');
+            let response = await fetch('http://newsapi.org/v2/top-headlines?country=in&category='+this.props.category+'&apiKey=c6ef3c067708492e8223b8ae32ba7efa');
             let responseJson = await response.json();
             this.setState({ data: responseJson.articles });
         } catch (error) {
@@ -94,11 +95,7 @@ export default class Sports extends Component {
             </Container>
         );
         } else {
-            return (
-                <View style={{ paddingTop: '70%' }}>
-                    <Spinner color='blue' />
-                </View>
-            );
+            return ( <Loading padding="70" /> );
         }
     }
 
