@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Text, Image, Modal, Dimensions, Share } from 'react-native';
+import { Text, Image, Modal, Dimensions, Share, View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title, Icon } from 'native-base';
+import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title } from 'native-base';
 import Loading from './Loading';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-let ScreenHeight = Dimensions.get("window").height;
+import ModalContent from './ModalContent';
 
 export default class Category extends Component {
     constructor(props) {
@@ -15,7 +16,8 @@ export default class Category extends Component {
             modalDataIndex: 0
         };
 
-        this.onShare = this.onShare.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.loadDefaultImage = this.loadDefaultImage.bind(this);
     }
 
     async UNSAFE_componentWillMount() {
@@ -32,10 +34,14 @@ export default class Category extends Component {
         }
     }
 
-    async onShare() {
-        await Share.share({
-            message: `${this.state.data[this.state.modalDataIndex].title}\n\nRead More: ${this.state.data[this.state.modalDataIndex].url}\n\n-- Shared using NewsBucket`
-        });
+    closeModal() {
+        this.setState({ modalVisible: false });
+    }
+
+    loadDefaultImage(index) {
+        var temp = this.state.data;
+        temp[index].urlToImage = 'https://assets-global.website-files.com/583347ca8f6c7ee058111b55/5afc770caa130421393fa412_google-doc-error-message.png';
+        this.setState({ data: temp });
     }
 
     render() {
@@ -47,49 +53,23 @@ export default class Category extends Component {
                         animationType="slide"
                         visible={this.state.modalVisible}
                         transparent
-                        onRequestClose={() => this.setState({ modalVisible: false })}
+                        onRequestClose={this.closeModal}
                     >
-                        <Container style={{margin:10, marginBottom:0, backgroundColor:'#fff'}}>
-                            <Header>
-                                <Left>
-                                    <Button transparent onPress={() => this.setState({ modalVisible: false })}>
-                                        <Icon name="close" />
-                                    </Button>
-                                </Left>
-                                <Body>
-                                    <Title children={this.state.data[this.state.modalDataIndex].title} style={{color: 'white'}}/>
-                                </Body>
-                                <Right>
-                                    <Button transparent onPress={this.onShare}>
-                                        <Icon name="share" />
-                                    </Button>
-                                </Right>
-                            </Header>
-                            <Content>
-                                <WebView
-                                    source={{uri: this.state.data[this.state.modalDataIndex].url}}
-                                    style={{width: '100%', height: ScreenHeight - 95}}
-                                />
-                            </Content>
-                        </Container>
+                        <ModalContent closeModal={this.closeModal} data={this.state.data[this.state.modalDataIndex]} />
                     </Modal>
                     
                     {this.state.data.filter(news => news.urlToImage !== null && news.urlToImage !== '').map((news, index) => {
                         return (
                             <Card key={index}>
-                                <CardItem style={{flexDirection: 'column'}}>                       
-                                    <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 5}}>{news.title.slice(0, news.title.lastIndexOf('-'))}</Text>
-                                </CardItem>
-
-                                <CardItem cardBody style={{flexDirection: 'column'}}> 
-                                    <Image style={{width: '90%', height: 200}} source={{uri: news.urlToImage}} /> 
-                                    <Text style={{width: '90%', marginVertical: 15}}>{news.description}</Text>
-                                    <Button style={{width: '35%', flexDirection: 'column', marginBottom: 15}}
-                                        onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>
-                                        <Text style={{color: 'white', textAlign: 'center', alignSelf: 'stretch', paddingTop: 7}}>
-                                            Read More!
-                                        </Text>
-                                    </Button>
+                                <CardItem style={{ paddingHorizontal: 10 }}>
+                                    <View style={{ width: "70%" }}>
+                                        <Text style={{fontSize: 16, textAlign: 'justify', fontWeight: 'bold', marginRight: 10, marginBottom: 5}}>{news.title.slice(0, news.title.lastIndexOf('-'))}</Text>
+                                        <Text style={{ color: "#696969" }}>{news.source.name}</Text>
+                                        <Text style={{ color: "blue", opacity: 0.7 }}
+                                            onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More &nbsp;<Icon name="angle-right" size={14}></Icon></Text>
+                                    </View>
+                                    <Image style={{width: "30%", height: 100}} source={{uri: news.urlToImage}} 
+                                        onError={() => this.loadDefaultImage(index)} />
                                 </CardItem>
                             </Card>
                         );
