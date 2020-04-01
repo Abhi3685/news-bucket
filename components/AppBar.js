@@ -9,13 +9,13 @@ export default class AppBar extends Component {
 
     render() {
         return ( 
-            <Header noLeft style={{ marginBottom: 0, paddingHorizontal: 20 }}>
+            <Header noLeft>
                 <Body>
                     <Title>NewsBucket</Title>
                 </Body>
                 <Right>
                     <Button transparent onPress={this.props.reload}>
-                        <Icon name="refresh" size={18} color="#fff" />
+                        <Icon name="refresh" size={17} color="#fff" />
                     </Button>
                 </Right>
             </Header>

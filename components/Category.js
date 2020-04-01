@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Text, Image, Modal, Dimensions, Share, View } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { Container, Button, Card, CardItem, Content, Header, Left, Right, Body, Title } from 'native-base';
+import { Text, Image, Modal, View } from 'react-native';
+import { Container, Card, CardItem, Content } from 'native-base';
 import Loading from './Loading';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
