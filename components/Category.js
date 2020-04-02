@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Text, Image, Modal, View } from 'react-native';
+import { Text, Modal, View } from 'react-native';
 import { Container, Card, CardItem, Content } from 'native-base';
 import Loading from './Loading';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ImageLoad from 'react-native-image-placeholder';
+import LazyLoad from 'react-lazyload';
 
 import ModalContent from './ModalContent';
 
@@ -21,9 +22,9 @@ export default class Category extends Component {
     }
 
     async UNSAFE_componentWillMount() {
-        let url = 'http://newsapi.org/v2/top-headlines?country=in&category='+this.props.category+'&apiKey=c6ef3c067708492e8223b8ae32ba7efa';
+        let url = 'https://newsapi.org/v2/top-headlines?country=in&category='+this.props.category+'&apiKey=c6ef3c067708492e8223b8ae32ba7efa';
         if(this.props.category == 'home'){
-            url = 'http://newsapi.org/v2/top-headlines?country=in&apiKey=c6ef3c067708492e8223b8ae32ba7efa';
+            url = 'https://newsapi.org/v2/top-headlines?country=in&apiKey=c6ef3c067708492e8223b8ae32ba7efa';
         }
         try {
             let response = await fetch(url);
@@ -60,21 +61,24 @@ export default class Category extends Component {
                     
                     {this.state.data.filter(news => news.urlToImage !== null && news.urlToImage !== '').map((news, index) => {
                         return (
-                            <Card key={index}>
-                                <CardItem style={{ paddingHorizontal: 10 }}>
-                                    <View style={{ width: "70%" }}>
-                                        <Text style={{fontSize: 16, textAlign: 'justify', fontWeight: 'bold', marginRight: 10, marginBottom: 5}}>{news.title.slice(0, news.title.lastIndexOf('-'))}</Text>
-                                        <Text style={{ color: "#696969" }}>{news.source.name}</Text>
-                                        <Text style={{ color: "blue", opacity: 0.7 }}
-                                            onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More &nbsp;<Icon name="angle-right" size={14}></Icon></Text>
-                                    </View>
-                                    <ImageLoad
-                                        style={{width: "30%", height: 100}}
-                                        loadingStyle={{ size: 'small', color: 'blue' }}
-                                        source={{uri: news.urlToImage}}
-                                    />
-                                </CardItem>
-                            </Card>
+                            <LazyLoad once key={index}
+                                height={100} placeholder={ <Loading /> }>
+                                <Card>
+                                    <CardItem style={{ paddingHorizontal: 10 }}>
+                                        <View style={{ width: "70%" }}>
+                                            <Text style={{fontSize: 16, textAlign: 'justify', fontWeight: 'bold', marginRight: 10, marginBottom: 5}}>{news.title.slice(0, news.title.lastIndexOf('-'))}</Text>
+                                            <Text style={{ color: "#696969" }}>{news.source.name}</Text>
+                                            <Text style={{ color: "blue", opacity: 0.7 }}
+                                                onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More &nbsp;<Icon name="angle-right" size={14}></Icon></Text>
+                                        </View>
+                                        <ImageLoad
+                                            style={{width: "30%", height: 100}}
+                                            loadingStyle={{ size: 'small', color: 'blue' }}
+                                            source={{uri: news.urlToImage}}
+                                        />
+                                    </CardItem>
+                                </Card>
+                            </LazyLoad>
                         );
                     })}
                 </Content>
