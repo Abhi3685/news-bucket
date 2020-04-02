@@ -3,6 +3,7 @@ import { Text, Image, Modal, View } from 'react-native';
 import { Container, Card, CardItem, Content } from 'native-base';
 import Loading from './Loading';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ImageLoad from 'react-native-image-placeholder';
 
 import ModalContent from './ModalContent';
 
@@ -67,8 +68,11 @@ export default class Category extends Component {
                                         <Text style={{ color: "blue", opacity: 0.7 }}
                                             onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More &nbsp;<Icon name="angle-right" size={14}></Icon></Text>
                                     </View>
-                                    <Image style={{width: "30%", height: 100}} source={{uri: news.urlToImage}} 
-                                        onError={() => this.loadDefaultImage(index)} />
+                                    <ImageLoad
+                                        style={{width: "30%", height: 100}}
+                                        loadingStyle={{ size: 'small', color: 'blue' }}
+                                        source={{uri: news.urlToImage}}
+                                    />
                                 </CardItem>
                             </Card>
                         );
