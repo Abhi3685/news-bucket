@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Text, Modal, View } from 'react-native';
-import { Container, Card, CardItem, Content } from 'native-base';
+import { Text, Modal, View, FlatList } from 'react-native';
+import { Container, Card, CardItem } from 'native-base';
 import Loading from './Loading';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ImageLoad from 'react-native-image-placeholder';
-import LazyLoad from 'react-lazyload';
 
 import ModalContent from './ModalContent';
 
@@ -18,7 +17,6 @@ export default class Category extends Component {
         };
 
         this.closeModal = this.closeModal.bind(this);
-        this.loadDefaultImage = this.loadDefaultImage.bind(this);
     }
 
     async UNSAFE_componentWillMount() {
@@ -29,7 +27,7 @@ export default class Category extends Component {
         try {
             let response = await fetch(url);
             let responseJson = await response.json();
-            this.setState({ data: responseJson.articles });
+            this.setState({ data: responseJson.articles.filter(news => news.urlToImage !== null && news.urlToImage !== '') });
         } catch (error) {
             console.error(error);
         }
@@ -39,49 +37,40 @@ export default class Category extends Component {
         this.setState({ modalVisible: false });
     }
 
-    loadDefaultImage(index) {
-        var temp = this.state.data;
-        temp[index].urlToImage = 'https://assets-global.website-files.com/583347ca8f6c7ee058111b55/5afc770caa130421393fa412_google-doc-error-message.png';
-        this.setState({ data: temp });
-    }
-
     render() {
         if(this.state.data.length > 0){
         return (
             <Container>
-                <Content>
-                    <Modal
-                        animationType="slide"
-                        visible={this.state.modalVisible}
-                        transparent
-                        onRequestClose={this.closeModal}
-                    >
-                        <ModalContent closeModal={this.closeModal} data={this.state.data[this.state.modalDataIndex]} />
-                    </Modal>
-                    
-                    {this.state.data.filter(news => news.urlToImage !== null && news.urlToImage !== '').map((news, index) => {
-                        return (
-                            <LazyLoad once key={index}
-                                height={100} placeholder={ <Loading /> }>
-                                <Card>
-                                    <CardItem style={{ paddingHorizontal: 10 }}>
-                                        <View style={{ width: "70%" }}>
-                                            <Text style={{fontSize: 16, textAlign: 'justify', fontWeight: 'bold', marginRight: 10, marginBottom: 5}}>{news.title.slice(0, news.title.lastIndexOf('-'))}</Text>
-                                            <Text style={{ color: "#696969" }}>{news.source.name}</Text>
-                                            <Text style={{ color: "blue", opacity: 0.7 }}
-                                                onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More &nbsp;<Icon name="angle-right" size={14}></Icon></Text>
-                                        </View>
-                                        <ImageLoad
-                                            style={{width: "30%", height: 100}}
-                                            loadingStyle={{ size: 'small', color: 'blue' }}
-                                            source={{uri: news.urlToImage}}
-                                        />
-                                    </CardItem>
-                                </Card>
-                            </LazyLoad>
-                        );
-                    })}
-                </Content>
+                <Modal
+                    animationType="slide"
+                    visible={this.state.modalVisible}
+                    transparent
+                    onRequestClose={this.closeModal}
+                >
+                    <ModalContent closeModal={this.closeModal} data={this.state.data[this.state.modalDataIndex]} />
+                </Modal>
+
+                <FlatList
+                    data={this.state.data}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={( { item: news, index } ) => (
+                        <Card key={index}>
+                            <CardItem style={{ paddingHorizontal: 10 }}>
+                                <View style={{ width: "70%" }}>
+                                    <Text style={{fontSize: 16, textAlign: 'justify', fontWeight: 'bold', marginRight: 10, marginBottom: 5}}>{news.title.slice(0, news.title.lastIndexOf('-'))}</Text>
+                                    <Text style={{ color: "#696969" }}>{news.source.name}</Text>
+                                    <Text style={{ color: "blue", opacity: 0.7 }}
+                                        onPress={() => this.setState({ modalVisible: true, modalDataIndex: index })}>Read More &nbsp;<Icon name="angle-right" size={14}></Icon></Text>
+                                </View>
+                                <ImageLoad
+                                    style={{width: "30%", height: 100}}
+                                    progressiveRenderingEnabled={true}
+                                    source={{uri: news.urlToImage}}
+                                />
+                            </CardItem>
+                        </Card>
+                    )}
+                />
             </Container>
         );
         } else {
